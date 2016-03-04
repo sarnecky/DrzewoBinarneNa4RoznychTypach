@@ -4,7 +4,7 @@
 
 //calloc zeruje zarezerwowana pamiec
 using namespace std;
-int elementy_stosu;
+
 enum Type
 {
 	INT,
@@ -16,16 +16,21 @@ struct stack
 {
 	int number;
 	struct stack *next;
-	
-}*top = NULL;
+	int elementy_stosu;
 
 void push(int element)
 {
-	elementy_stosu++;
+	int e;
+	if (this->elementy_stosu < 0)this->elementy_stosu = 1;
+	else this->elementy_stosu++;
+	e = this->elementy_stosu;
+
 	struct stack *New;
 	New = top;//nowy element staje sie wierzcholkiem
 	top = (struct stack*)malloc(sizeof(struct stack*));
+
 	top->number = element;
+	top->elementy_stosu = e;
 	top->next = New;
 }
 
@@ -33,27 +38,36 @@ void pop()
 {
 	//przy "CRT detected that the application wrote to memory after end of heap buffer" dac Ignore i dziala
 	int element = 0;
+
 	struct stack *p;
-	elementy_stosu--;
+	int e = this->elementy_stosu--;
 	if (top != NULL)
 	{
 		p = top;
 		top = top->next; //tutaj wierzcholek staje sie poprzednim elementem
 		free(p);
 	}
+	top->elementy_stosu = e;
+
 }
+
 void wypisz()
 {
 	int i = 0;
 	struct stack *p;
 	p = top;
-	while (i != elementy_stosu)
+	int e = top->elementy_stosu;
+	printf("{ ");
+	while (i != e)
 	{
 		printf("%i, ", p->number);
 		p = p->next;
 		i++;
 	}
+	printf("} Stos");
+	printf("\n");
 }
+}*top = NULL;
 
 struct tree
 {
@@ -68,6 +82,7 @@ tree *addNode(struct tree *korzen, void *n, Type type)
 	double nowy;
 	double wezel;
 	int compareChar = 0;
+	int compareStack= 0;
 	if (korzen == NULL)
 	{
 		korzen = (struct tree*)malloc(sizeof(struct tree*));
@@ -79,7 +94,7 @@ tree *addNode(struct tree *korzen, void *n, Type type)
 	}
 	else
 	{
-		if ((korzen->type == INT || korzen->type == DOUBLE || korzen->type == CHAR) && (type == INT || type == DOUBLE || type == CHAR))
+		if ((korzen->type == INT || korzen->type == DOUBLE || korzen->type == CHAR || korzen->type == STOS) && (type == INT || type == DOUBLE || type == CHAR || type == STOS))
 		{
 
 				if (korzen->type == INT) wezel = *static_cast<int*>(korzen->element);
@@ -92,14 +107,21 @@ tree *addNode(struct tree *korzen, void *n, Type type)
 			if (korzen->type == CHAR && type == CHAR) //przypadek gdy porwnujemy 2 chary
 			{
 				
-				char *w = static_cast<char*>(korzen->element);
-				char *no = static_cast<char*>(n);
+				char *w = static_cast<char*>(korzen->element); //element sprawdzany
+				char *no = static_cast<char*>(n); //nowy element
 				if (strcmp(no, w) > 0 ) compareChar = 1;//nowy wiekszy, idzie na prawo
 				else compareChar = 2;//nowy mniejszy idzie na lewo
 			}
 			
+			if (korzen->type == STOS && type == STOS) //przypadek gdy porownujemy 2 stosy
+			{
+				stack *w = static_cast<stack*>(korzen->element);
+				stack *no = static_cast<stack*>(n);
+				if (w->elementy_stosu < no->elementy_stosu) compareStack = 1; //ilosc elemetow nowego stosu jest wieksza wiec wstwiamy go do prawego wezla
+				else compareStack = 2;
+			}
 
-			if ((korzen->type == CHAR && type != CHAR) || ((double)wezel >= (double)nowy && (korzen->type != CHAR && type != CHAR)) || compareChar == 2) //mniejszy-lewa strona
+			if ((korzen->type == CHAR && type != CHAR) || ((double)wezel >= (double)nowy && (korzen->type != CHAR && type != CHAR)) || compareChar == 2 || compareStack == 2) //mniejszy-lewa strona
 			{			
 				if (korzen->left == NULL)
 				{
@@ -111,7 +133,7 @@ tree *addNode(struct tree *korzen, void *n, Type type)
 				}
 				else addNode<T>(korzen->left, n, type);
 			}
-			else if ((korzen->type != CHAR && type == CHAR) || ((double)wezel < (double)nowy && (korzen->type != CHAR && type != CHAR)) || compareChar == 1) //wiekszy-prawa strona
+			else if ((korzen->type != CHAR && type == CHAR) || ((double)wezel < (double)nowy && (korzen->type != CHAR && type != CHAR)) || compareChar == 1 || compareStack == 1) //wiekszy-prawa strona
 			{
 				if (korzen->right == NULL)
 				{
@@ -130,12 +152,6 @@ tree *addNode(struct tree *korzen, void *n, Type type)
 		}
 		
 	}
-}
-tree *a(tree *korzen)
-{
-	korzen = (struct tree*)malloc(sizeof(struct tree*));
-	cout << korzen->element;
-	return korzen;
 }
 void inOrder(tree *korzen)
 {
@@ -161,60 +177,51 @@ void inOrder(tree *korzen)
 		printf("%s(char*), ", w);
 		printf("\n");
 	}
+	if (korzen->type == STOS)
+	{
+		stack *s = static_cast<stack*>(korzen->element);
+		s->wypisz();
+
+	}
 
 	if (korzen->right != NULL) inOrder(korzen->right);	
 }
 
-
-struct tree2
-{
-	Type type;
-	void *t;
-};
-void addNode2(tree2 *a, void *liczba, Type type)
-{
-
-	if (a->type == INT && type == DOUBLE)
-	{
-		int wezel = *static_cast<int*>(a->t);
-		double nowy = *static_cast<double*>(liczba);
-
-		if ((double)wezel > nowy)cout << wezel;
-		else cout << nowy;
-
-	}
-
-
-}
 int main()
 {
-	tree2 *a = (struct tree2*)malloc(sizeof(struct tree2*));
-	
 	int b = 10;
 	double c = 4.1;
 	void *w = &b;
 	char *cz = "abz";
 	char *cz2 = "aba";
-	a->t = w;
-	a->type = INT;
+	stack *s = NULL;
+	s->push(2);
+	s->push(3);
+	s->push(5);
+	s->push(9);
+	s->wypisz();
+	stack *s2 = (struct stack*)malloc(sizeof(struct stack*));
+	s2->push(5);
+	s2->push(9);
 	
-	stack *s = (struct stack*)malloc(sizeof(struct stack*));
-
 	tree *korzen;
 	korzen = NULL;
 	//uwazac na zmiane adresow zmiennych
-	korzen = addNode<int>(korzen, &b, INT);
+	/*korzen = addNode<int>(korzen, &b, INT);
 	addNode<char*>(korzen, cz, CHAR);
 	addNode<char*>(korzen, cz2, CHAR);
 	int z = 15;
 	addNode<int>(korzen, &z, INT);
 	addNode<double>(korzen, &c, DOUBLE);
 	double h = 11.11;
-	addNode<double>(korzen, &h, DOUBLE);
+	addNode<double>(korzen, &h, DOUBLE);*/
+	//korzen=addNode<stack>(korzen, s, STOS);
+	
+	//addNode<stack>(korzen, s2, STOS);
 	
 	
 
-	inOrder(korzen);
+	//inOrder(korzen);
 	_getch();
 	return 0;
 }
