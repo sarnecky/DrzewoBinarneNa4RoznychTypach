@@ -17,46 +17,47 @@ struct stack
 	int number;
 	struct stack *next;
 	int elementy_stosu;
-
-void push(int element)
+};
+stack *push(int element, stack *root)
 {
 	int e;
-	if (this->elementy_stosu < 0)this->elementy_stosu = 1;
-	else this->elementy_stosu++;
-	e = this->elementy_stosu;
+	if (root == NULL) e = 0;
+	else e = root->elementy_stosu;
+	e++;
 
 	struct stack *New;
-	New = top;//nowy element staje sie wierzcholkiem
-	top = (struct stack*)malloc(sizeof(struct stack*));
+	New = root;
+	root = (struct stack*)malloc(sizeof(struct stack*));
+	root->next = New;
+	root->elementy_stosu = e;
+	root->number = element;
 
-	top->number = element;
-	top->elementy_stosu = e;
-	top->next = New;
+	return root;
 }
 
-void pop()
+void pop(stack *root)
 {
 	//przy "CRT detected that the application wrote to memory after end of heap buffer" dac Ignore i dziala
 	int element = 0;
 
 	struct stack *p;
-	int e = this->elementy_stosu--;
-	if (top != NULL)
+	int e = root->elementy_stosu--;
+	if (root != NULL)
 	{
-		p = top;
-		top = top->next; //tutaj wierzcholek staje sie poprzednim elementem
+		p = root;
+		root = root->next; //tutaj wierzcholek staje sie poprzednim elementem
 		free(p);
 	}
-	top->elementy_stosu = e;
+	root->elementy_stosu = e;
 
 }
 
-void wypisz()
+void wypisz(stack *root)
 {
 	int i = 0;
 	struct stack *p;
-	p = top;
-	int e = top->elementy_stosu;
+	p = root;
+	int e = root->elementy_stosu;
 	printf("{ ");
 	while (i != e)
 	{
@@ -67,7 +68,7 @@ void wypisz()
 	printf("} Stos");
 	printf("\n");
 }
-}*top = NULL;
+
 
 struct tree
 {
@@ -76,7 +77,6 @@ struct tree
 	struct tree *right;
 	Type type;
 };
-template<class T>
 tree *addNode(struct tree *korzen, void *n, Type type)
 {
 	double nowy;
@@ -121,7 +121,9 @@ tree *addNode(struct tree *korzen, void *n, Type type)
 				else compareStack = 2;
 			}
 
-			if ((korzen->type == CHAR && type != CHAR) || ((double)wezel >= (double)nowy && (korzen->type != CHAR && type != CHAR)) || compareChar == 2 || compareStack == 2) //mniejszy-lewa strona
+			if ((korzen->type == CHAR && type != CHAR && type != STOS) ||
+				((double)wezel >= (double)nowy && (korzen->type != CHAR && type != CHAR && korzen->type != STOS && type != STOS)) ||
+				compareChar == 2 || compareStack == 2 || (korzen->type == STOS && type != STOS)) //mniejszy-lewa strona
 			{			
 				if (korzen->left == NULL)
 				{
@@ -131,9 +133,11 @@ tree *addNode(struct tree *korzen, void *n, Type type)
 					korzen->left->left = NULL;
 					korzen->left->type = type;
 				}
-				else addNode<T>(korzen->left, n, type);
+				else addNode(korzen->left, n, type);
 			}
-			else if ((korzen->type != CHAR && type == CHAR) || ((double)wezel < (double)nowy && (korzen->type != CHAR && type != CHAR)) || compareChar == 1 || compareStack == 1) //wiekszy-prawa strona
+			else if ((korzen->type != CHAR && type == CHAR && korzen->type != STOS) ||
+				((double)wezel < (double)nowy && (korzen->type != CHAR && type != CHAR)) ||
+				compareChar == 1 || compareStack == 1 || (korzen->type != STOS && type == STOS)) //wiekszy-prawa strona
 			{
 				if (korzen->right == NULL)
 				{
@@ -143,7 +147,7 @@ tree *addNode(struct tree *korzen, void *n, Type type)
 					korzen->right->left = NULL;
 					korzen->right->type = type;
 				}
-				else addNode<T>(korzen->right, n, type);
+				else addNode(korzen->right, n, type);
 			}
 			else 
 			{
@@ -180,7 +184,7 @@ void inOrder(tree *korzen)
 	if (korzen->type == STOS)
 	{
 		stack *s = static_cast<stack*>(korzen->element);
-		s->wypisz();
+		wypisz(s);
 
 	}
 
@@ -195,33 +199,32 @@ int main()
 	char *cz = "abz";
 	char *cz2 = "aba";
 	stack *s = NULL;
-	s->push(2);
-	s->push(3);
-	s->push(5);
-	s->push(9);
-	s->wypisz();
-	stack *s2 = (struct stack*)malloc(sizeof(struct stack*));
-	s2->push(5);
-	s2->push(9);
-	
+	s=push(2,s);
+	s=push(3,s);
+	s=push(5,s);
+	//wypisz(s);
+	stack *s2 = NULL;
+	s2=push(5, s2);
+	s2=push(9, s2);
+	///wypisz(s2);
 	tree *korzen;
 	korzen = NULL;
 	//uwazac na zmiane adresow zmiennych
-	/*korzen = addNode<int>(korzen, &b, INT);
-	addNode<char*>(korzen, cz, CHAR);
-	addNode<char*>(korzen, cz2, CHAR);
+	korzen = addNode(korzen, &b, INT);
+	addNode(korzen, cz, CHAR);
+	addNode(korzen, cz2, CHAR);
 	int z = 15;
-	addNode<int>(korzen, &z, INT);
-	addNode<double>(korzen, &c, DOUBLE);
+	addNode(korzen, &z, INT);
+	addNode(korzen, &c, DOUBLE);
 	double h = 11.11;
-	addNode<double>(korzen, &h, DOUBLE);*/
-	//korzen=addNode<stack>(korzen, s, STOS);
+	addNode(korzen, &h, DOUBLE);
+	addNode(korzen, s, STOS);
 	
-	//addNode<stack>(korzen, s2, STOS);
+	addNode(korzen, s2, STOS);
 	
 	
 
-	//inOrder(korzen);
+	inOrder(korzen);
 	_getch();
 	return 0;
 }
