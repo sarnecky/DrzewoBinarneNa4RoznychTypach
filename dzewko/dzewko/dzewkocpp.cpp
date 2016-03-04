@@ -65,8 +65,9 @@ struct tree
 template<class T>
 tree *addNode(struct tree *korzen, void *n, Type type)
 {
-	T nowy;
+	double nowy;
 	double wezel;
+	int compareChar = 0;
 	if (korzen == NULL)
 	{
 		korzen = (struct tree*)malloc(sizeof(struct tree*));
@@ -78,20 +79,28 @@ tree *addNode(struct tree *korzen, void *n, Type type)
 	}
 	else
 	{
-		if ((korzen->type == INT || korzen->type == DOUBLE ) && (type == INT || type == DOUBLE))
+		if ((korzen->type == INT || korzen->type == DOUBLE || korzen->type == CHAR) && (type == INT || type == DOUBLE || type == CHAR))
 		{
 
+				if (korzen->type == INT) wezel = *static_cast<int*>(korzen->element);
+				else wezel =  *static_cast<double*>(korzen->element);
 
-			if (korzen->type == INT) wezel = *static_cast<int*>(korzen->element);
-			else wezel =  *static_cast<double*>(korzen->element);
+				if (type == DOUBLE) nowy = *static_cast<double*>(n);
+				else nowy = *static_cast<int*>(n);
 
-			if (type == DOUBLE) nowy = (double)*static_cast<double*>(n);
-			else nowy = *static_cast<int*>(n);
-			
-
-			if ((double)wezel >= (double)nowy) //mniejszy-lewa strona
+			 
+			if (korzen->type == CHAR && type == CHAR) //przypadek gdy porwnujemy 2 chary
 			{
 				
+				char *w = static_cast<char*>(korzen->element);
+				char *no = static_cast<char*>(n);
+				if (strcmp(no, w) > 0 ) compareChar = 1;//nowy wiekszy, idzie na prawo
+				else compareChar = 2;//nowy mniejszy idzie na lewo
+			}
+			
+
+			if ((korzen->type == CHAR && type != CHAR) || ((double)wezel >= (double)nowy && (korzen->type != CHAR && type != CHAR)) || compareChar == 2) //mniejszy-lewa strona
+			{			
 				if (korzen->left == NULL)
 				{
 					korzen->left = (struct tree*)malloc(sizeof(struct tree*));
@@ -102,7 +111,7 @@ tree *addNode(struct tree *korzen, void *n, Type type)
 				}
 				else addNode<T>(korzen->left, n, type);
 			}
-			else //wiekszy-prawa strona
+			else if ((korzen->type != CHAR && type == CHAR) || ((double)wezel < (double)nowy && (korzen->type != CHAR && type != CHAR)) || compareChar == 1) //wiekszy-prawa strona
 			{
 				if (korzen->right == NULL)
 				{
@@ -113,6 +122,10 @@ tree *addNode(struct tree *korzen, void *n, Type type)
 					korzen->right->type = type;
 				}
 				else addNode<T>(korzen->right, n, type);
+			}
+			else 
+			{
+
 			}
 		}
 		
@@ -140,6 +153,12 @@ void inOrder(tree *korzen)
 	{
 		double w = *static_cast<double*>(korzen->element);
 		printf("%f(double), ", w);
+		printf("\n");
+	}
+	if (korzen->type == CHAR)
+	{
+		char *w = static_cast<char*>(korzen->element);
+		printf("%s(char*), ", w);
 		printf("\n");
 	}
 
@@ -174,7 +193,8 @@ int main()
 	int b = 10;
 	double c = 4.1;
 	void *w = &b;
-	char *cz = "fdad";
+	char *cz = "abz";
+	char *cz2 = "aba";
 	a->t = w;
 	a->type = INT;
 	
@@ -182,12 +202,17 @@ int main()
 
 	tree *korzen;
 	korzen = NULL;
+	//uwazac na zmiane adresow zmiennych
 	korzen = addNode<int>(korzen, &b, INT);
+	addNode<char*>(korzen, cz, CHAR);
+	addNode<char*>(korzen, cz2, CHAR);
 	int z = 15;
 	addNode<int>(korzen, &z, INT);
 	addNode<double>(korzen, &c, DOUBLE);
 	double h = 11.11;
 	addNode<double>(korzen, &h, DOUBLE);
+	
+	
 
 	inOrder(korzen);
 	_getch();
