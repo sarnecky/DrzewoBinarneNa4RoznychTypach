@@ -190,41 +190,150 @@ void inOrder(tree *korzen)
 
 	if (korzen->right != NULL) inOrder(korzen->right);	
 }
+void interfejs()
+{
+	int b = 10;
+	char *napis;
+	tree *korzen;
+	korzen = NULL;
+	korzen = addNode(korzen, &b, INT);
+	int k, ilosc;
+	int *w;
+	double *wd;
+	stack *s = NULL;
+	cout << "Nacisnij klawisz\n";
+	cout << "1. int, 2. double, 3. char*, 4. stos, 5. podglad drzewa, 6. wyjscie z danej instrukcji\n";
+	while (cin >> k)
+	{
+		system("cls");
 
+		switch (k)
+		{
+		case 1:
+			cout << "1. Znaki rozne lub 2. takie same | ilosc znakow\n";
+			cin >> k >> ilosc;
+			w = new int[ilosc];
+			if (k == 2)
+			{
+				cout << "Jaki znak ?";
+				cin >> k;
+				for (int i = 0; i < ilosc; i++)
+				{
+					int w = k;
+					addNode(korzen, &w, INT);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < ilosc; i++)
+				{
+
+					cout << "Jaki znak ?";
+					cin >> w[i];
+					addNode(korzen, &w[i], INT);
+				}
+			}
+			system("cls");
+			inOrder(korzen);
+			break;
+		case 2:
+			cout << "1. Znaki rozne lub 2. takie same | ilosc znakow\n";
+			cin >> k >> ilosc;
+			wd = new double[ilosc];
+			if (k == 2)
+			{
+				cout << "Jaki znak ?";
+				cin >> k;
+				for (int i = 0; i < ilosc; i++)
+				{
+					int w = k;
+					addNode(korzen, &wd, DOUBLE);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < ilosc; i++)
+				{
+
+					cout << "Jaki znak ?";
+					cin >> wd[i];
+					addNode(korzen, &wd[i], DOUBLE);
+				}
+			}
+			system("cls");
+			inOrder(korzen);
+			break;
+		case 3:
+			cout << "Podaj napis\n";
+			napis = new char;
+			cin >> napis;
+			addNode(korzen, napis, CHAR);
+			inOrder(korzen);
+			break;
+		case 4:
+			cout << "Stos: ile elementow\n";
+			cin >> ilosc;
+			cout << "\n";
+			cout << "Stos: Podawaj kolejne elementy\n";
+			w = new int[ilosc];
+			s = NULL;
+			for (int i = 0; i < ilosc; i++)
+			{
+
+				cout << "Jaki znak ?";
+				cin >> k;
+				s = push(k, s);
+
+			}
+			system("cls");
+			addNode(korzen, s, STOS);
+			inOrder(korzen);
+			break;
+		case 5:
+
+			inOrder(korzen);
+			break;
+		}
+		cout << "Nacisnij klawisz\n";
+		cout << "1. int, 2. double, 3. char*, 4. stos, 5. podglad drzewa, 6. wyjscie z danej instrukcji\n";
+	}
+
+}
 int main()
 {
 	int b = 10;
-	double c = 4.1;
-	void *w = &b;
-	char *cz = "abz";
-	char *cz2 = "aba";
-	stack *s = NULL;
-	s=push(2,s);
-	s=push(3,s);
-	s=push(5,s);
-	//wypisz(s);
-	stack *s2 = NULL;
-	s2=push(5, s2);
-	s2=push(9, s2);
-	///wypisz(s2);
+	char *napis;
+	//double c = 4.1;
+	//void *w = &b;
+	//char *cz = "abz";
+	//char *cz2 = "aba";
+	//stack *s = NULL;
+	//s=push(2,s);
+	//s=push(3,s);
+	//s=push(5,s);
+	////wypisz(s);
+	//stack *s2 = NULL;
+	//s2=push(5, s2);
+	//s2=push(9, s2);
+	/////wypisz(s2);
 	tree *korzen;
 	korzen = NULL;
-	//uwazac na zmiane adresow zmiennych
+	////uwazac na zmiane adresow zmiennych
 	korzen = addNode(korzen, &b, INT);
-	addNode(korzen, cz, CHAR);
-	addNode(korzen, cz2, CHAR);
-	int z = 15;
-	addNode(korzen, &z, INT);
-	addNode(korzen, &c, DOUBLE);
-	double h = 11.11;
-	addNode(korzen, &h, DOUBLE);
-	addNode(korzen, s, STOS);
-	
-	addNode(korzen, s2, STOS);
-	
+	//addNode(korzen, cz, CHAR);
+	//addNode(korzen, cz2, CHAR);
+	//int z = 15;
+	//addNode(korzen, &z, INT);
+	//addNode(korzen, s, STOS);
+
+	//addNode(korzen, s2, STOS);
+	//addNode(korzen, &c, DOUBLE);
+	//double h = 11.11;
+	//addNode(korzen, &h, DOUBLE);
+
 	
 
-	inOrder(korzen);
+	//inOrder(korzen);
 	_getch();
 	return 0;
 }
