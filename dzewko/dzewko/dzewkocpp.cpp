@@ -497,38 +497,7 @@ void interfejs()
 }	
 int main()
 {
-	int b = 10;
-	char *napis;
-	double c = 4.1;
-	void *w = &b;
-	char *cz = "abz";
-	char *cz2 = "aba";
-	stack *s = NULL;
-	s=push(2,s);
-	pop(s);
-	//wypisz(s);
-	stack *s2 = NULL;
-	s2=push(5, s2);
-	s2=push(9, s2);
-	///wypisz(s2);
-	tree *korzen;
-	korzen = NULL;
-	////uwazac na zmiane adresow zmiennych
-	korzen = addNode(korzen, &b, INT);
-	//addNode(korzen, cz, CHAR);
-	//addNode(korzen, cz2, CHAR);
-	//int z = 15;
-	//addNode(korzen, &z, INT);
-	//addNode(korzen, s, STOS);
-
-	//addNode(korzen, s2, STOS);
-	//addNode(korzen, &c, DOUBLE);
-	//double h = 11.11;
-	//addNode(korzen, &h, DOUBLE);
-
 	interfejs();
-
-	//inOrder(korzen);
 	_getch();
 	return 0;
 }
