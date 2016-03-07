@@ -38,7 +38,7 @@ stack *push(int element, stack *root)
 
 void pop(stack *root)
 {
-	//przy "CRT detected that the application wrote to memory after end of heap buffer" dac Ignore i dziala
+	
 	int element = 0;
 
 	struct stack *p;
@@ -72,7 +72,22 @@ void wypisz(stack *root)
 	printf("} Stos");
 	printf("\n");
 }
-
+bool porownajStosy(stack *s1, stack*s2) //zakladamy ze maja ta sama dlugosc
+{
+	int i = 0;
+	int e = s1->elementy_stosu; 
+	while (i != e)
+	{
+		if (s1->number != s2->number) return false;
+		else
+		{
+			s1 = s1->next;
+			s2 = s2->next;
+		}
+		i++;
+	}
+	return true;
+}
 
 struct tree
 {
@@ -205,8 +220,8 @@ void inOrder(tree *korzen)
 tree *search(tree *korzen, void *n, Type type)
 {
 	//funkcja zwraca adres gdzie znajduje sie dana wartoœæ w drzewie
-	double nowy;
-	double wezel;
+	double nowy; //ten ktorego szukam
+	double wezel; //ten w ktorym sie obecnie znajduje
 	int compareChar = 0;
 	int compareStack = 0;
 	if (korzen == NULL)
@@ -224,8 +239,14 @@ tree *search(tree *korzen, void *n, Type type)
 		else nowy = *static_cast<int*>(n);
 
 		if (type == korzen->type)
-			if ((double)wezel == (double)nowy)
-				return korzen;
+		{
+			if (type == INT || type == DOUBLE)
+			{
+				if ((double)wezel == (double)nowy)
+					return korzen;
+			}
+		}
+			
 
 		//przypadek char*
 		if (korzen->type == CHAR && type == CHAR) //przypadek gdy porwnujemy 2 chary
@@ -234,7 +255,11 @@ tree *search(tree *korzen, void *n, Type type)
 			char *w = static_cast<char*>(korzen->element); //element sprawdzany
 			char *no = static_cast<char*>(n); //nowy element
 			if (strcmp(no, w) > 0) compareChar = 1;//nowy wiekszy, idzie na prawo
-			else compareChar = 2;//nowy mniejszy idzie na lewo
+			else if (strcmp(no, w) < 0)compareChar = 2;//nowy mniejszy idzie na lewo
+			else  //przypadek gdy ciagi znakow sa rowne
+			{
+				return korzen;
+			}
 		}
 
 		//przypadek stosu
@@ -243,7 +268,12 @@ tree *search(tree *korzen, void *n, Type type)
 			stack *w = static_cast<stack*>(korzen->element);
 			stack *no = static_cast<stack*>(n);
 			if (w->elementy_stosu < no->elementy_stosu) compareStack = 1; //ilosc elemetow nowego stosu jest wieksza wiec wstwiamy go do prawego wezla
-			else compareStack = 2;
+			else if (w->elementy_stosu > no->elementy_stosu) compareStack = 2;
+			else
+			{
+				if (porownajStosy(w, no))
+					return korzen;
+			}
 		}
 
 		//logika wyszukiwania
@@ -284,8 +314,9 @@ tree *nastepnik(tree *korzen)
 }
 tree *deleteNode(struct tree *korzen, void *n, Type type)
 {
-	tree *DoUsuniecia = search(korzen, n, type);
+	tree *DoUsuniecia = search(korzen, n, type); //szuka danego elementu do usuniecia
 	tree *y, *x;
+	if (DoUsuniecia == NULL) return DoUsuniecia;
 	if (DoUsuniecia->left == NULL || DoUsuniecia->right == NULL)
 		y = DoUsuniecia;
 	else y = nastepnik(DoUsuniecia);
@@ -312,7 +343,7 @@ tree *deleteNode(struct tree *korzen, void *n, Type type)
 }
 void interfejs()
 {
-	int b = 10;
+	int b = 10,l;
 	char *napis;
 	tree *korzen;
 	korzen = NULL;
@@ -433,6 +464,26 @@ void interfejs()
 				napis = new char;
 				cin >> napis;
 				delete(deleteNode(korzen, napis, (Type)k));
+			}
+			if (k == 3)
+			{
+				cout << "Stos: ile elementow\n";
+				cin >> ilosc;
+				cout << "\n";
+				cout << "Stos: Podawaj kolejne elementy stosu\n";
+				w = new int[ilosc];
+				s = NULL;
+				for (int i = 0; i < ilosc; i++)
+				{
+
+					cout << "Jaki znak ?";
+					cin >> l;
+					s = push(l, s);
+
+				}
+				system("cls");
+				delete(deleteNode(korzen, s, (Type)k));
+				inOrder(korzen);
 			}
 			system("cls");
 			inOrder(korzen);
