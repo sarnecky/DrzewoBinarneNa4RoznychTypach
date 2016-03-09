@@ -337,6 +337,16 @@ tree *deleteNode(struct tree *korzen, void *n, Type type)
 		DoUsuniecia->element = y->element;
 	return y;
 }
+void UsunDrzewo(tree  *&wezel) {
+	tree  *pom;
+	if (wezel != NULL)  {
+		UsunDrzewo(wezel->left);
+		UsunDrzewo(wezel->right);
+		pom = wezel;
+		wezel = NULL;
+		delete pom;
+	}
+}
 void interfejs()
 {
 	int b = 10,l;
@@ -348,8 +358,8 @@ void interfejs()
 	double *wd,a1;
 	int *z;
 	stack *s = NULL;
-	cout << "Nacisnij klawisz\n";
-	cout << "1. int, 2. double, 3. char*, 4. stos, 5. podglad drzewa, 6. usun dany wezel \n";
+	printf("Nacisnij klawisz\n");
+	printf("1. int, 2. double, 3. char*, 4. stos, 5. podglad drzewa, 6. usun dany wezel \n");
 	while (cin >> k)
 	{
 		system("cls");
@@ -357,8 +367,8 @@ void interfejs()
 		switch (k)
 		{
 		case 1:
-			cout << "1. Znaki rozne lub 2. takie same | ilosc znakow\n";
-			cin >> k >> ilosc;
+			printf("1. Znaki rozne lub 2. takie same | ilosc znakow\n");
+			scanf("%i %i", &k, &ilosc);
 			if (k == 2)
 			{
 				
@@ -374,7 +384,7 @@ void interfejs()
 				for (int i = 0; i < ilosc; i++)
 				{
 					
-					cout << "Jaki znak ?";
+					printf("Jaki znak ?");
 					int *w = (int*)malloc(sizeof(int));
 					cin >> *w;
 					if(korzen==NULL)korzen = addNode(korzen, w, INT);
@@ -385,8 +395,8 @@ void interfejs()
 			inOrder(korzen);
 			break;
 		case 2:
-			cout << "1. Znaki rozne lub 2. takie same | ilosc znakow\n";
-			cin >> k >> ilosc;
+			printf("1. Znaki rozne lub 2. takie same | ilosc znakow\n");
+			scanf("%i %i", &k, &ilosc);
 			if (k == 2)
 			{
 				for (int i = 0; i < ilosc; i++)
@@ -401,7 +411,7 @@ void interfejs()
 				for (int i = 0; i < ilosc; i++)
 				{
 
-					cout << "Jaki znak ?";
+					printf("Jaki znak ?");
 					double *w = (double*)malloc(sizeof(double));
 					cin >> *w;
 					if (korzen == NULL)korzen = addNode(korzen, w, DOUBLE);
@@ -412,24 +422,24 @@ void interfejs()
 			inOrder(korzen);
 			break;
 		case 3:
-			cout << "Podaj napis\n";
+			printf("Podaj napis\n");
 			napis = (char*)malloc(10);
 			cin >> napis;
 			if (korzen == NULL)korzen = addNode(korzen, napis, CHAR);
 			else addNode(korzen, napis, CHAR);
-			cout << "\n";
+			printf("\n");
 			inOrder(korzen);
 			break;
 		case 4:
-			cout << "Stos: ile elementow\n";
+			printf("Stos: ile elementow\n");
 			cin >> ilosc;
-			cout << "\n";
-			cout << "Stos: Podawaj kolejne elementy\n";
+			printf("\n");
+			printf("Stos: Podawaj kolejne elementy\n");
 			s = NULL;
 			for (int i = 0; i < ilosc; i++)
 			{
 
-				cout << "Jaki znak ?";
+				printf("Jaki znak ?");
 				cin >> k;
 				s = push(k, s);
 
@@ -444,9 +454,9 @@ void interfejs()
 			inOrder(korzen);
 			break;
 		case 6:
-			cout << "Podaj typ zmiennej 0. INT 1.DOUBLE 2.CHAR* 3.STOS \n";
+			printf("Podaj typ zmiennej 0. INT 1.DOUBLE 2.CHAR* 3.STOS \n");
 			cin >> k;
-			cout << "Podaj wartosc zmiennej/stosu \n";
+			printf("Podaj wartosc zmiennej/stosu \n");
 			
 			if (k == 0)
 			{
@@ -466,15 +476,15 @@ void interfejs()
 			}
 			if (k == 3)
 			{
-				cout << "Stos: ile elementow\n";
+				printf("Stos: ile elementow\n");
 				cin >> ilosc;
-				cout << "\n";
-				cout << "Stos: Podawaj kolejne elementy stosu\n";
+				printf("\n");
+				printf("Stos: Podawaj kolejne elementy stosu\n");
 				s = NULL;
 				for (int i = 0; i < ilosc; i++)
 				{
 
-					cout << "Jaki znak ?";
+					printf("Jaki znak ?");
 					cin >> l;
 					s = push(l, s);
 
@@ -490,12 +500,13 @@ void interfejs()
 				inOrder(korzen);
 				
 			}
-			else { free(usun); cout << "Pusto\n"; korzen = NULL; }
+			else { printf("A korzenia nie pozwole usunac\n"); inOrder(korzen); }
+
 			break;
 
 		}
-		cout << "Nacisnij klawisz\n";
-		cout << "1. int, 2. double, 3. char*, 4. stos, 5. podglad drzewa, 6.usun element  \n";
+		printf("Nacisnij klawisz\n");
+		printf("1. int, 2. double, 3. char*, 4. stos, 5. podglad drzewa, 6. usun dany wezel \n");
 	}
 
 }	
